@@ -267,16 +267,17 @@ class Toolbar {
         this.cursor.pos.x -= 40;
         this.cursor.pos.y -= 24;
       }
-
-      for (const wire of this.cursor.wiresToUpdate) {
-        if (wire) {
-          const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
-          if (ind === 0) {
-            wire.xi = ev.clientX;
-            wire.yi = ev.clientY;
-          } else {
-            wire.xf = ev.clientX;
-            wire.yf = ev.clientY;
+      if (this.cursor.wiresToUpdate) {
+        for (const wire of this.cursor.wiresToUpdate) {
+          if (wire) {
+            const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
+            if (ind === 0) {
+              wire.xi = ev.clientX;
+              wire.yi = ev.clientY;
+            } else {
+              wire.xf = ev.clientX;
+              wire.yf = ev.clientY;
+            }
           }
         }
       }
@@ -295,15 +296,17 @@ class Toolbar {
         this.cursor.pos.y -= 24;
       }
 
-      for (const wire of this.cursor.wiresToUpdate) {
-        if (wire) {
-          const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
-          if (ind === 0) {
-            wire.xi = ev.clientX;
-            wire.yi = ev.clientY;
-          } else {
-            wire.xf = ev.clientX;
-            wire.yf = ev.clientY;
+      if (this.cursor.wiresToUpdate) {
+        for (const wire of this.cursor.wiresToUpdate) {
+          if (wire) {
+            const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
+            if (ind === 0) {
+              wire.xi = ev.clientX;
+              wire.yi = ev.clientY;
+            } else {
+              wire.xf = ev.clientX;
+              wire.yf = ev.clientY;
+            }
           }
         }
       }
