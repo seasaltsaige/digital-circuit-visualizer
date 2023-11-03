@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circuit Maker</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <div class="view">
+    <div class="toolbar">
+      <div class="controls">
+        <div class="item control update-circuit selected">
+          <h3>Update Circuit</h3>
+        </div>
+        <div class="item control update-pins">
+          <h3>Update Pins</h3>
+        </div>
+        <div class="item control delete">
+          <h3>Delete Item</h3>
+        </div>
+        <div class="item control connect">
+          <h3>Connect Nodes</h3>
+        </div>
+      </div>
+      <div class="logic">
+        <div class="deselect">
+          <h3>Deselct</h3>
+        </div>
+        <!-- <div class="nodes"> -->
+        <div class="item input selected">
+          <h3>Input</h3>
+        </div>
+        <div class="item output">
+          <h3>Output</h3>
+        </div>
+        <!-- </div> -->
+        <!-- <div class="gates"> -->
+        <div class="item AND">
+          <h3>AND</h3>
+        </div>
+        <div class="item NOT">
+          <h3>NOT</h3>
+        </div>
+
+      </div>
+      <!-- </div> -->
+
+    </div>
+    <canvas class="hand" id="screen"></canvas>
+    <div class="connecting_items"></div>
+  </div>
+</body>
+
+<script src="./src/util/pins/InputNode.js"></script>
+<script src="./src/util/pins/OutputNode.js"></script>
+<script src="./src/util/defaultCircuits/Circuit.js"></script>
+<script src="./src/util/defaultCircuits/And.js"></script>
+<script src="./src/util/defaultCircuits/Not.js"></script>
+
+<script src="./src/screen/LogicScreen.js"></script>
+<script src="./src/toolbar/Toolbar.js"></script>
+
+<script src="./src/index.js"></script>
+
+<!-- <script src="./src/util/Switch.js"></script> -->
+
+</html>

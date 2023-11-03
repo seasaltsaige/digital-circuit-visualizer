@@ -1,0 +1,152 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+h3 {
+  user-select: none;
+}
+
+.toolbar {
+  position: absolute;
+  width: 90%;
+  height: 150px;
+  background-color: #1c1c1c;
+  left: 5%;
+  top: 20px;
+
+  display: grid;
+  grid-template-columns: 400px 400px;
+  overflow-x: scroll;
+  align-items: center;
+  justify-items: center;
+  align-content: center;
+  border-radius: 30px;
+}
+
+.toolbar>div {
+  display: flex;
+}
+
+.controls {
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.logic,
+.nodes,
+.gates {
+  align-items: center;
+  justify-self: start;
+}
+
+.logic {
+  padding: 10px;
+  overflow: scroll;
+}
+
+
+.logic::before {
+  content: "";
+  width: 2px;
+  height: 125px;
+  background-color: rgba(255, 255, 255, 0.357);
+  border-radius: 50%;
+}
+
+.logic {
+  /* width: 100%; */
+  overflow: hidden;
+}
+
+.toolbar>div>div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar>div>div>h3,
+.toolbar>div>div>div>h3 {
+  color: white;
+  text-align: center;
+  font-family: sans-serif;
+  font-size: medium;
+  font-weight: 300;
+}
+
+.deselect {
+  border-radius: 15px;
+  width: 100px;
+  height: 40px;
+  margin-left: 40px;
+  outline: 2px solid white;
+  background-color: #2b2b2b;
+  cursor: pointer;
+}
+
+
+canvas {
+  height: 100vh;
+  width: 100vw;
+}
+
+.item {
+  width: 100px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: 2px solid white;
+  border-radius: 20px;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+
+.controls>.item {
+  width: 70px;
+  height: 50px;
+  border-radius: 15px;
+}
+
+.controls>.item>h3 {
+  font-size: 15px;
+}
+
+.selected {
+  outline-color: green;
+}
+
+.hand {
+  cursor: grab;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.delete {
+  cursor: cell;
+}
+
+.connect {
+  cursor: pointer;
+}
+
+.connecting_items {
+  position: absolute;
+  left: 100px;
+  bottom: 100px;
+  width: fit-content;
+  height: fit-content;
+  background-color: #1c1c1c;
+}
