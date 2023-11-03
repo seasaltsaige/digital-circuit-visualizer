@@ -158,6 +158,9 @@ class Toolbar {
           }
         }
       } else if (this.selectedTool === "delete") {
+        // TODO: Delete wires associated with node that gets deleted
+
+
         const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
         const out_pins = lScreen.out_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
         const lgs = lScreen.logic_gates.filter(lg => this._withinRect_(lg.location, clickPosition, 80, 40));
@@ -192,10 +195,12 @@ class Toolbar {
 
         if (item === null) return;
 
+
+        // TODO: Update code so that connecting nodes backwards is ok, gonna be kinda difficult to do i think, if I even can
         if (this.connect_nodes.node_a === null) {
           this.connect_nodes.node_a = item;
         } else if (this.connect_nodes.node_b === null) {
-          if (this.connect_nodes.node_a.name === item.name) return;
+          if (this.connect_nodes.node_a._id === item._id) return;
           this.connect_nodes.node_b = item;
 
           const xi = this.connect_nodes.node_a.label ? this.connect_nodes.node_a.location.x : this.connect_nodes.node_a.location.x + 40;
