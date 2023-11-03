@@ -4,9 +4,20 @@ class InputNode {
   label = "";
   /** @type {0 | 1} */
   value = 0;
-  location = { x: 200, y: 200 }
+  location = { x: 200, y: 200 };
+  /** @type {number} */
+  _id;
 
-  constructor() { }
+  // Input node is the only one with no inputs
+
+  // Not good names
+  /** @type {(InputNode | OutputNode)[]} */
+  outputs = [];
+
+  constructor() {
+    this._id = id;
+    id++;
+  }
   /**
    * @param {0 | 1} value 
    */
@@ -16,6 +27,12 @@ class InputNode {
 
   getValue() {
     return this.value;
+  }
+
+  /** @param {...(OutputNode[])} outs */
+  updateOutputs(...outs) {
+    for (const out of outs)
+      this.outputs.push(out);
   }
 
 }

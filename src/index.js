@@ -6,6 +6,8 @@ const ctx = canvas.getContext("2d");
 ctx.fillStyle = "#2b2b2b";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+let id = 0;
+
 
 const lScreen = new LogicScreen(ctx);
 const tool = new Toolbar();

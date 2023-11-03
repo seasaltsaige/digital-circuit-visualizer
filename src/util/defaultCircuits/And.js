@@ -4,27 +4,37 @@ class AND extends Circuit {
 
   constructor() {
     super();
-    this.inputs.push(new InputNode());
-    this.inputs.push(new InputNode());
-
-    this.outputs.push(new OutputNode());
   }
 
   __evaluate__() {
-    const a = this.inputs[0];
-    const b = this.inputs[1];
-    if (a.value === 1 && b.value === 1) return this.outputs[0].updateNode(1);
-    else return this.outputs[0].updateNode(0);
+    if (this.inputs.length < 2) return 0;
+    const vals = this.inputs.map(n => n.getValue());
+    if (vals.includes(0)) return 0;
+    else return 1;
   }
 
 
-  /** @param {...number} inps */
+  /** @param {...InputNode | OutputNode} inps */
   updateInputs(...inps) {
-    super.updateInputs(...inps);
+    for (const inp of inps) {
+      this.inputs.push(inp);
+    }
     this.__evaluate__();
   }
-  getOutput() {
-    return this.outputs[0].output;
+
+  getValue() {
+    const circuitValue = this.__evaluate__();
+    for (const out of this.outputs) {
+      console.log(out, "and");
+      out.updateNode(circuitValue);
+    }
+    this.value = circuitValue;
+    return circuitValue;
   }
+
+
+  // getOutput() {
+  //   return this.outputs[0].output;
+  // }
 
 }

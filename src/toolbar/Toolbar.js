@@ -1,3 +1,5 @@
+// This probably shouldnt even be called the toolbar class anymore lol
+
 class Toolbar {
   // Either edit the pins values or the circuit itself
   /** @type {"circuit" | "pins" | "delete" | "connect"} */
@@ -13,7 +15,8 @@ class Toolbar {
   /**
    * @type {{
    * pos: { x: number; y: number };
-   * itemToMove: Circuit | InputNode | OutputNode | undefined
+   * itemToMove: Circuit | InputNode | OutputNode | undefined;
+   * wiresToUpdate: { connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }[];
    * }}
    */
   cursor = {
@@ -22,6 +25,7 @@ class Toolbar {
       y: 0,
     },
     itemToMove: undefined,
+    wiresToUpdate: undefined,
   }
 
   connect_nodes = {
@@ -199,14 +203,7 @@ class Toolbar {
           const xf = this.connect_nodes.node_b.label ? this.connect_nodes.node_b.location.x : this.connect_nodes.node_b.location.x + 40;
           const yf = this.connect_nodes.node_b.label ? this.connect_nodes.node_b.location.y : this.connect_nodes.node_b.location.y + 24;
 
-          lScreen.wires.push({
-            connects: [this.connect_nodes.node_a, this.connect_nodes.node_b],
-            xi,
-            xf,
-            yi,
-            yf,
-          });
-
+          lScreen.addWire({ connects: [this.connect_nodes.node_a, this.connect_nodes.node_b], xi, xf, yi, yf, status: 0 });
 
           this.connect_nodes = {
             node_a: null,
@@ -220,6 +217,7 @@ class Toolbar {
         if (pins.length > 0) {
           const pin = pins[0];
           pin.updateNode(pin.value === 0 ? 1 : 0);
+          lScreen.evaluate();
           lScreen.render();
         }
       }
@@ -241,7 +239,6 @@ class Toolbar {
       items.push(...out_pins);
       items.push(...lgs);
 
-      // console.log(pins);
       if (items.length > 0) {
         const item = items[0];
         // I hate this
@@ -249,8 +246,12 @@ class Toolbar {
           clickPosition.x -= 40;
           clickPosition.y -= 24;
         }
+
+        const wires = lScreen.wires.filter(v => v.connects[0]._id === item._id || v.connects[1]._id === item._id);
+
         this.cursor.itemToMove = item;
         this.cursor.pos = clickPosition;
+        if (wires.length > 0) this.cursor.wiresToUpdate = wires;
       }
 
     }
@@ -267,6 +268,19 @@ class Toolbar {
         this.cursor.pos.y -= 24;
       }
 
+      for (const wire of this.cursor.wiresToUpdate) {
+        if (wire) {
+          const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
+          if (ind === 0) {
+            wire.xi = ev.clientX;
+            wire.yi = ev.clientY;
+          } else {
+            wire.xf = ev.clientX;
+            wire.yf = ev.clientY;
+          }
+        }
+      }
+
       this.cursor.itemToMove.location = this.cursor.pos;
       lScreen.render();
     }
@@ -281,8 +295,22 @@ class Toolbar {
         this.cursor.pos.y -= 24;
       }
 
+      for (const wire of this.cursor.wiresToUpdate) {
+        if (wire) {
+          const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
+          if (ind === 0) {
+            wire.xi = ev.clientX;
+            wire.yi = ev.clientY;
+          } else {
+            wire.xf = ev.clientX;
+            wire.yf = ev.clientY;
+          }
+        }
+      }
+
       this.cursor.itemToMove.location = this.cursor.pos;
       this.cursor.itemToMove = undefined;
+      this.cursor.wiresToUpdate = undefined;
       lScreen.render();
     }
 

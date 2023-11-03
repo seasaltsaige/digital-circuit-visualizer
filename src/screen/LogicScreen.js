@@ -15,7 +15,7 @@ class LogicScreen {
   // For now a straight line connecting is fine, don't think ill change that
 
   /**
-   * @type {{ connects: [any, any]; xi: number; yi: number; xf: number; yf: number;}[]}
+   * @type {{ connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }[]}
    */
   wires = [];
   /** @type {CanvasRenderingContext2D} */
@@ -58,39 +58,54 @@ class LogicScreen {
    * @param {{x: number; y: number}} location 
    */
   addLogicGate(Gate, location) {
-    // const Gate = this.logic_gates.find(g => g.name === gateName);
-    // const gate = new Gate();
     if (Gate !== undefined) {
       const gate = new Gate();
       gate.location = location;
       this.logic_gates.push(gate);
       this.render();
     }
+  }
 
+
+  /** @param {{ connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }} wire */
+  addWire(wire) {
+    const toConnect = wire.connects;
+    const nodeA = toConnect[0];
+    const nodeB = toConnect[1];
+
+    nodeB.updateInputs(nodeA);
+    nodeA.updateOutputs(nodeB);
+
+    this.wires.push(wire);
   }
 
   evaluate() {
 
+    // Back to front
+    for (const outNode of this.out_pins)
+      outNode.evaluate();
+
+
+    for (const wire of this.wires) {
+      console.log(wire);
+      if ((wire.connects[0].value === 1))
+        wire.status = 1;
+      else wire.status = 0;
+    }
   }
 
   render() {
+
+    this.evaluate();
     const ctx = this.ctx;
     const canvas = ctx.canvas;
-
-
-    // ctx.lineWidth = 1;
-
-
-    // ctx.lineWidth = 1;
 
     ctx.fillStyle = "#2b2b2b";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (const wire of this.wires) {
-      console.log(wire);
-      console.log(wire.xi, wire.xf, wire.yi, wire.yf)
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = "white";
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = wire.status === 0 ? "#1c1c1c" : "red";
       ctx.beginPath();
       ctx.moveTo(wire.xi, wire.yi);
       ctx.lineTo(wire.xf, wire.yf);
