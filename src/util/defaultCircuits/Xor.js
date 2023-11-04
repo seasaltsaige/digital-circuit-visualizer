@@ -2,6 +2,8 @@ class XOR extends Circuit {
   static name = "XOR";
   name = "XOR";
 
+  // seemingly weird xor behavior with multiple outputs
+
   constructor() {
     super();
   }

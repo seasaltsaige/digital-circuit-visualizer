@@ -2,6 +2,9 @@ class OR extends Circuit {
   static name = "OR";
   name = "OR";
 
+  inputs = [new CircuitInputNode(), new CircuitInputNode()];
+  outputs = [new CircuitOutputNode()];
+
   constructor() {
     super();
   }

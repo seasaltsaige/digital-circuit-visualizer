@@ -2,8 +2,7 @@ class OutputNode {
   static name = "output";
   name = "output";
   label = "";
-  /** @type {0 | 1} */
-  output = 0;
+
   location = { x: 500, y: 200 };
   /**
    * @type {(InputNode | OutputNode)[]}
@@ -15,6 +14,7 @@ class OutputNode {
   _id;
   /** @type {number} */
   value;
+  r = 13;
   constructor() {
     this._id = id;
     id++;
@@ -23,7 +23,6 @@ class OutputNode {
   /** @param {0 | 1} value */
   updateNode(value) {
     this.value = value;
-    this.output = value;
   }
 
   getValue() {

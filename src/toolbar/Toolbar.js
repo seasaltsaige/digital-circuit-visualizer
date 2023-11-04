@@ -42,6 +42,7 @@ class Toolbar {
     this.logicItems.push(NAND);
     this.logicItems.push(NOR);
     this.logicItems.push(XOR);
+    this.logicItems.push(AND2);
     this.canvas = document.getElementById("screen");
 
     this._init_();
@@ -155,8 +156,8 @@ class Toolbar {
             }
             lScreen.addOutputPin(clickPosition, pValue);
           } else {
-            clickPosition.x -= 40;
-            clickPosition.y -= 24;
+            clickPosition.x -= 55;
+            clickPosition.y -= 38;
             lScreen.addLogicGate(this.selectedLogicItem, clickPosition);
           }
         }

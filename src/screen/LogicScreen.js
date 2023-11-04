@@ -161,24 +161,117 @@ class LogicScreen {
     }
 
     for (const lg of this.logic_gates) {
-      // lg.name
-      ctx.fillStyle = "#1c1c1c";
-      ctx.strokeStyle = "#bfbfbf";
-      ctx.beginPath();
-      ctx.rect(lg.location.x, lg.location.y, 80, 40);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.font = "medium sans-serif";
-      ctx.fillText(lg.name, lg.location.x + 40, lg.location.y + 25);
-
+      this.logicGateRender(ctx, lg);
     }
 
   }
 
+  // Temp function
+  /** @param {Circuit} logicGate  */
+  logicGateRender(ctx, logicGate) {
+
+    let n1 = logicGate.inputs.length;
+    let n2 = logicGate.outputs.length;
+    // arbitrary
+    let r = 5;
+    // arbitrary
+    let d = 75;
+    // middle of logic gate (40x80)
+    let midY = logicGate.location.y + (80 / 2);
+    let sep = (d - n1 * r) / (n1 + 1);
+    let sep2 = (d - n2 * r) / (n2 + 1);
+    let xPos = logicGate.location.x;
+    let nodeOffset = 15;
+    let rectHeight = 40;
+    let rectWidth = 80;
+
+    // input bar
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.moveTo(xPos, midY - (d / 2));
+    ctx.lineTo(xPos, midY + (d / 2));
+    ctx.stroke();
+    ctx.closePath();
+    // input nodes
+    for (let i = 1; i <= n1; i++) {
+      const yPos = (i * sep) + ((i - 1) * r) + midY - (d / 2);
+      // node
+      ctx.beginPath();
+      ctx.moveTo(xPos - nodeOffset, yPos);
+      ctx.lineTo(xPos, yPos);
+      ctx.stroke();
+      ctx.closePath();
+      // connecting wire to input bar
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(xPos - nodeOffset, yPos, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
+      logicGate.inputs[i - 1].location = { x: xPos - nodeOffset, y: yPos };
+
+    }
+
+
+    // output bar
+    let xPos2 = xPos + nodeOffset * 2 + rectWidth;
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.moveTo(xPos2, midY - (d / 2));
+    ctx.lineTo(xPos2, midY + (d / 2));
+    ctx.stroke();
+    ctx.closePath();
+
+    // output nodes
+    for (let j = 1; j <= n2; j++) {
+      const yPos = (j * sep2) + ((j - 1) * r) + midY - (d / 2);
+      // 
+      ctx.beginPath();
+      ctx.moveTo(xPos2 + nodeOffset, yPos);
+      ctx.lineTo(xPos2, yPos);
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(xPos2 + nodeOffset, yPos, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
+      logicGate.outputs[j - 1].location = { x: xPos2 + nodeOffset, y: yPos };
+      logicGate.outputs[j - 1].r = r;
+    }
+
+    ctx.strokeStyle = "black";
+    // connect input bar to LG
+    ctx.beginPath();
+    ctx.moveTo(xPos, midY);
+    ctx.lineTo(xPos + nodeOffset, midY);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.strokeStyle = "black";
+    // connect output bar to LG
+    ctx.beginPath();
+    ctx.moveTo(xPos2, midY);
+    ctx.lineTo(xPos2 - nodeOffset, midY);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.rect(xPos + nodeOffset, midY - (rectHeight / 2), rectWidth, rectHeight);
+    ctx.closePath();
+    ctx.fillStyle = "#1c1c1c";
+    ctx.strokeStyle = "#bfbfbf";
+    ctx.fill();
+    ctx.stroke();
+
+
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.font = "medium sans-serif";
+    ctx.fillText(logicGate.name, logicGate.location.x + 55, logicGate.location.y + 45);
+
+  }
 
 
 }

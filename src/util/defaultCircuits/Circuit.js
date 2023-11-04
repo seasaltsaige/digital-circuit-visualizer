@@ -1,12 +1,12 @@
 class Circuit {
   static name = "";
-  /** @type {(InputNode | OutputNode)[]} */
+  /** @type {(CircuitInputNode)[]} */
   inputs = [];
   // I don't like this but its the first thing i thought of
   /** @type {number[]} */
   connected_input_indecies = [];
 
-  /** @type {(InputNode | OutputNode)[]} */
+  /** @type {(CircuitOutputNode)[]} */
   outputs = [];
 
   value = 0;
@@ -28,22 +28,6 @@ class Circuit {
   /** @param {0 | 1} val  */
   updateNode(val) {
     this.value = val;
-  }
-
-  /**
-   * 
-   * @param  {...(InputNode | OutputNode)} inps 
-   */
-  updateInputs(...inps) {
-    for (let i = 0; i < this.inputs.length; i++) {
-      this.inputs[i].updateNode(inps[i]);
-    }
-  }
-
-  /** @param {...(OutputNode[])} outs */
-  updateOutputs(...outs) {
-    for (const out of outs)
-      this.outputs.push(out);
   }
 
   getValue() {

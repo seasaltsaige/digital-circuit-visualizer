@@ -2,6 +2,9 @@ class NOT extends Circuit {
   static name = "NOT";
   name = "NOT";
 
+  inputs = [new CircuitInputNode()];
+  outputs = [new CircuitOutputNode()];
+
   constructor() {
     super();
   }

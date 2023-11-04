@@ -7,6 +7,7 @@ class InputNode {
   location = { x: 200, y: 200 };
   /** @type {number} */
   _id;
+  r = 13;
 
   // Input node is the only one with no inputs
 
