@@ -5,4 +5,8 @@ class CircuitInputNode extends InputNode {
   constructor() {
     super();
   }
+
+  getValue() {
+    this.input.getValue();
+  }
 }

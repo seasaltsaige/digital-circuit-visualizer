@@ -3,7 +3,8 @@ class XOR extends Circuit {
   name = "XOR";
 
   // seemingly weird xor behavior with multiple outputs
-
+  inputs = [new CircuitInputNode(), new CircuitInputNode()];
+  outputs = [new CircuitOutputNode()];
   constructor() {
     super();
   }

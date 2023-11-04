@@ -181,7 +181,7 @@ class LogicScreen {
     let sep = (d - n1 * r) / (n1 + 1);
     let sep2 = (d - n2 * r) / (n2 + 1);
     let xPos = logicGate.location.x;
-    let nodeOffset = 15;
+    let nodeOffset = 10;
     let rectHeight = 40;
     let rectWidth = 80;
 

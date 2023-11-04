@@ -7,4 +7,8 @@ class CircuitOutputNode extends OutputNode {
   constructor() {
     super();
   }
+
+  getValue() {
+    return this.circuitConnectedTo.getValue();
+  }
 }
