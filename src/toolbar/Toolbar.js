@@ -266,10 +266,6 @@ class Toolbar {
           clickPosition.y -= 38;
         }
 
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(item.location.x, item.location.y, 80 + 20, 75);
-
         const wires = lScreen.wires.filter(v => v.connects[0]._id === item._id || v.connects[1]._id === item._id);
 
         this.cursor.itemToMove = item;
