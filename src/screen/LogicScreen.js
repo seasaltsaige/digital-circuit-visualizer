@@ -87,7 +87,6 @@ class LogicScreen {
 
 
     for (const wire of this.wires) {
-      console.log(wire);
       if ((wire.connects[0].value === 1))
         wire.status = 1;
       else wire.status = 0;

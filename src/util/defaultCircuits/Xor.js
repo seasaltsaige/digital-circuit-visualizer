@@ -1,6 +1,6 @@
-class AND extends Circuit {
-  static name = "AND";
-  name = "AND";
+class XOR extends Circuit {
+  static name = "XOR";
+  name = "XOR";
 
   constructor() {
     super();
@@ -9,8 +9,9 @@ class AND extends Circuit {
   __evaluate__() {
     if (this.inputs.length < 2) return 0;
     const vals = this.inputs.map(n => n.getValue());
-    if (vals.includes(0)) return 0;
-    else return 1;
+    const num_ones = vals.filter(v => v === 1);
+    if (num_ones.length === 1) return 1;
+    else return 0;
   }
 
 
@@ -25,9 +26,11 @@ class AND extends Circuit {
   getValue() {
     const circuitValue = this.__evaluate__();
     for (const out of this.outputs) {
-      out.updateNode(circuitValue);
+      // out.updateNode(circuitValue);
     }
     this.value = circuitValue;
+
+    console.log(this.value, circuitValue);
     return circuitValue;
   }
 }

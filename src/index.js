@@ -8,9 +8,5 @@ ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 let id = 0;
 
-
 const lScreen = new LogicScreen(ctx);
 const tool = new Toolbar();
-
-// 
-

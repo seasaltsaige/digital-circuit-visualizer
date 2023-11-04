@@ -22,7 +22,6 @@ class NOT extends Circuit {
   getValue() {
     const circuitValue = this.__evaluate__();
     for (const out of this.outputs) {
-      console.log(out, "NOT");
       out.updateNode(circuitValue);
     }
     this.value = circuitValue;

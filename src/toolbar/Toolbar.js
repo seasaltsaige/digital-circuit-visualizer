@@ -38,7 +38,10 @@ class Toolbar {
     this.logicItems.push(OutputNode);
     this.logicItems.push(AND);
     this.logicItems.push(NOT);
-
+    this.logicItems.push(OR);
+    this.logicItems.push(NAND);
+    this.logicItems.push(NOR);
+    this.logicItems.push(XOR);
     this.canvas = document.getElementById("screen");
 
     this._init_();

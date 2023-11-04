@@ -1,6 +1,6 @@
-class AND extends Circuit {
-  static name = "AND";
-  name = "AND";
+class OR extends Circuit {
+  static name = "OR";
+  name = "OR";
 
   constructor() {
     super();
@@ -9,8 +9,9 @@ class AND extends Circuit {
   __evaluate__() {
     if (this.inputs.length < 2) return 0;
     const vals = this.inputs.map(n => n.getValue());
-    if (vals.includes(0)) return 0;
-    else return 1;
+    // const num_ones = vals.filter(v => v === 1);
+    if (vals.includes(1)) return 1;
+    else return 0;
   }
 
 

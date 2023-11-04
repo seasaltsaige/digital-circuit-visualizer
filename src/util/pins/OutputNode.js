@@ -13,6 +13,8 @@ class OutputNode {
   outputs = [];
   /** @type {number} */
   _id;
+  /** @type {number} */
+  value;
   constructor() {
     this._id = id;
     id++;
@@ -20,6 +22,7 @@ class OutputNode {
 
   /** @param {0 | 1} value */
   updateNode(value) {
+    this.value = value;
     this.output = value;
   }
 
@@ -32,7 +35,6 @@ class OutputNode {
     for (const input of this.inputs) {
       inputValues.push(input.getValue())
     }
-    console.log(inputValues);
     if (inputValues.includes(1)) this.updateNode(1);
     else this.updateNode(0);
   }
