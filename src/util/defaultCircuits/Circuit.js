@@ -2,9 +2,6 @@ class Circuit {
   static name = "";
   /** @type {(CircuitInputNode)[]} */
   inputs = [];
-  // I don't like this but its the first thing i thought of
-  /** @type {number[]} */
-  connected_input_indecies = [];
 
   /** @type {(CircuitOutputNode)[]} */
   outputs = [];
@@ -30,6 +27,7 @@ class Circuit {
     this.value = val;
   }
 
+  /** @returns {0 | 1} */
   getValue() {
 
   }

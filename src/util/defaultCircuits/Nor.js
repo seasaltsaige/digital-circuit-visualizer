@@ -3,7 +3,7 @@ class NOR extends Circuit {
   name = "NOR";
 
   inputs = [new CircuitInputNode(), new CircuitInputNode()];
-  outputs = [new CircuitOutputNode()];
+  outputs = [new CircuitOutputNode(this)];
 
   constructor() {
     super();

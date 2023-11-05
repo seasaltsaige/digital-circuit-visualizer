@@ -1,14 +1,23 @@
 class CircuitOutputNode extends OutputNode {
   // Output TO
-  output = null;
+  outputs = [];
   /** @type {Circuit} */
-  circuitConnectedTo = null;
+  parent = null;
+  name = "circuit_output";
 
-  constructor() {
+  constructor(parent) {
     super();
+    this.parent = parent;
+    this.label = null;
+  }
+
+  updateOutputs(...outs) {
+    this.outputs.push(...outs);
   }
 
   getValue() {
-    return this.circuitConnectedTo.getValue();
+    const val = this.parent.getValue();
+    this.value = val;
+    return val;
   }
 }

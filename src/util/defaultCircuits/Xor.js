@@ -4,7 +4,7 @@ class XOR extends Circuit {
 
   // seemingly weird xor behavior with multiple outputs
   inputs = [new CircuitInputNode(), new CircuitInputNode()];
-  outputs = [new CircuitOutputNode()];
+  outputs = [new CircuitOutputNode(this)];
   constructor() {
     super();
   }

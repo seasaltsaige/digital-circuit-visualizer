@@ -3,7 +3,7 @@ class OR extends Circuit {
   name = "OR";
 
   inputs = [new CircuitInputNode(), new CircuitInputNode()];
-  outputs = [new CircuitOutputNode()];
+  outputs = [new CircuitOutputNode(this)];
 
   constructor() {
     super();
@@ -28,9 +28,6 @@ class OR extends Circuit {
 
   getValue() {
     const circuitValue = this.__evaluate__();
-    for (const out of this.outputs) {
-      out.updateNode(circuitValue);
-    }
     this.value = circuitValue;
     return circuitValue;
   }

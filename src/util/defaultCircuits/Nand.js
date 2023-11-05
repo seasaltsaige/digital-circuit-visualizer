@@ -3,7 +3,7 @@ class NAND extends Circuit {
   name = "NAND";
 
   inputs = [new CircuitInputNode(), new CircuitInputNode()];
-  outputs = [new CircuitOutputNode()];
+  outputs = [new CircuitOutputNode(this)];
 
   constructor() {
     super();

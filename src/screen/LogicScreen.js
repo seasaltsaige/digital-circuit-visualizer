@@ -66,17 +66,44 @@ class LogicScreen {
     }
   }
 
-
-  /** @param {{ connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }} wire */
+  // TODO: Connect new nodes together.
+  // Input to lg:
+  // Input: [Outputs -> circuit input]
+  // Lg -> Lg
+  // circuit output -> circuit input
+  // lg -> output
+  // circuit output -> output
+  /** @param {[InputNode | OutputNode | CircuitInputNode | CircuitOutputNode, InputNode | OutputNode | CircuitInputNode | CircuitOutputNode]} wire */
   addWire(wire) {
-    const toConnect = wire.connects;
-    const nodeA = toConnect[0];
-    const nodeB = toConnect[1];
+    const toConnect = wire;
+    const first_node = toConnect[0];
+    const second_node = toConnect[1];
 
-    nodeB.updateInputs(nodeA);
-    nodeA.updateOutputs(nodeB);
+    if (second_node.name === "input") toConnect.reverse();
+    else if (first_node.name === "output") toConnect.reverse();
+    else if (second_node.name === "circuit_output") toConnect.reverse();
+    else if (first_node.name === "circuit_input") toConnect.reverse();
 
-    this.wires.push(wire);
+    console.log(toConnect);
+
+    const xi = toConnect[0].name === "input" ? toConnect[0].location.x + 23 : toConnect[0].location.x;
+    console.log(xi, "addwire");
+    const xf = toConnect[1].name === "output" ? toConnect[1].location.x - 23 : toConnect[1].location.x;
+
+    console.log(toConnect);
+    const a = toConnect[0];
+    const b = toConnect[1];
+
+
+    a.updateOutputs(b);
+    b.updateInputs(a);
+
+    this.wires.push({ connects: wire, status: 0, xi: xi, yi: toConnect[0].location.y, xf: xf, yf: toConnect[1].location.y });
+
+    // nodeB.updateInputs(nodeA);
+    // nodeA.updateOutputs(nodeB);
+
+    // this.wires.push(wire);
   }
 
   evaluate() {
@@ -103,6 +130,16 @@ class LogicScreen {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (const wire of this.wires) {
+      const xi = wire.connects[0].name === "input" ? wire.connects[0].location.x + 23 : wire.connects[0].location.x;
+      const xf = wire.connects[1].name === "output" ? wire.connects[1].location.x - 23 : wire.connects[1].location.x;
+
+      console.log(xi, xf);
+
+      wire.xi = xi;
+      wire.yi = wire.connects[0].location.y;
+      wire.xf = xf;
+      wire.yf = wire.connects[1].location.y;
+
       ctx.lineWidth = 4;
       ctx.strokeStyle = wire.status === 0 ? "#1c1c1c" : "red";
       ctx.beginPath();
@@ -113,9 +150,23 @@ class LogicScreen {
     }
 
     ctx.lineWidth = 1;
-
+    let nodeOffset = 10;
     ctx.strokeStyle = "#bfbfbf";
     for (const ip of this.in_pins) {
+
+
+      ctx.beginPath();
+      ctx.moveTo(ip.location.x + 13, ip.location.y);
+      ctx.lineTo(ip.location.x + 13 + nodeOffset, ip.location.y);
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.beginPath();
+      ctx.fillStyle = "black";
+      ctx.arc(ip.location.x + 13 + nodeOffset, ip.location.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
       ctx.beginPath();
       ctx.arc(ip.location.x, ip.location.y, 13, 0, Math.PI * 2);
       ctx.closePath();
@@ -139,6 +190,19 @@ class LogicScreen {
     }
 
     for (const op of this.out_pins) {
+
+      ctx.beginPath();
+      ctx.moveTo(op.location.x - 13, op.location.y);
+      ctx.lineTo(op.location.x - 13 - nodeOffset, op.location.y);
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.beginPath();
+      ctx.fillStyle = "black";
+      ctx.arc(op.location.x - 13 - nodeOffset, op.location.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
       ctx.beginPath();
       ctx.arc(op.location.x, op.location.y, 13, 0, Math.PI * 2);
       ctx.closePath();
@@ -166,7 +230,7 @@ class LogicScreen {
 
   }
 
-  // Temp function
+  // Temp function: TODO: Split into smaller functions for code readability
   /** @param {Circuit} logicGate  */
   logicGateRender(ctx, logicGate) {
 

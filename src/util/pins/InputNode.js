@@ -9,10 +9,8 @@ class InputNode {
   _id;
   r = 13;
 
-  // Input node is the only one with no inputs
-
   // Not good names
-  /** @type {(InputNode | OutputNode)[]} */
+  /** @type {(CircuitInputNode | OutputNode)[]} */
   outputs = [];
 
   constructor() {
