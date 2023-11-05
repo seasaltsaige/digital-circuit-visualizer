@@ -2,6 +2,8 @@ class AND extends Circuit {
   static name = "AND";
   name = "AND";
 
+  inputs = [new CircuitInputNode(this), new CircuitInputNode(this)];
+  outputs = [new CircuitOutputNode(this)];
   constructor() {
     super();
   }

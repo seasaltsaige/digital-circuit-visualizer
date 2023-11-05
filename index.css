@@ -126,8 +126,13 @@ canvas {
   outline-color: green;
 }
 
+/* * {
+  cursor: pointer
+} */
+
+
 .hand {
-  cursor: grab;
+  cursor: pointer;
 }
 
 .pointer {

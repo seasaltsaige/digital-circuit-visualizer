@@ -2,6 +2,9 @@ class NAND extends Circuit {
   static name = "NAND";
   name = "NAND";
 
+  inputs = [new CircuitInputNode(), new CircuitInputNode()];
+  outputs = [new CircuitOutputNode(this)];
+
   constructor() {
     super();
   }

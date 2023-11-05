@@ -66,17 +66,44 @@ class LogicScreen {
     }
   }
 
-
-  /** @param {{ connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }} wire */
+  // TODO: Connect new nodes together.
+  // Input to lg:
+  // Input: [Outputs -> circuit input]
+  // Lg -> Lg
+  // circuit output -> circuit input
+  // lg -> output
+  // circuit output -> output
+  /** @param {[InputNode | OutputNode | CircuitInputNode | CircuitOutputNode, InputNode | OutputNode | CircuitInputNode | CircuitOutputNode]} wire */
   addWire(wire) {
-    const toConnect = wire.connects;
-    const nodeA = toConnect[0];
-    const nodeB = toConnect[1];
+    const toConnect = wire;
+    const first_node = toConnect[0];
+    const second_node = toConnect[1];
 
-    nodeB.updateInputs(nodeA);
-    nodeA.updateOutputs(nodeB);
+    if (second_node.name === "input") toConnect.reverse();
+    else if (first_node.name === "output") toConnect.reverse();
+    else if (second_node.name === "circuit_output") toConnect.reverse();
+    else if (first_node.name === "circuit_input") toConnect.reverse();
 
-    this.wires.push(wire);
+    console.log(toConnect);
+
+    const xi = toConnect[0].name === "input" ? toConnect[0].location.x + 23 : toConnect[0].location.x;
+    console.log(xi, "addwire");
+    const xf = toConnect[1].name === "output" ? toConnect[1].location.x - 23 : toConnect[1].location.x;
+
+    console.log(toConnect);
+    const a = toConnect[0];
+    const b = toConnect[1];
+
+
+    a.updateOutputs(b);
+    b.updateInputs(a);
+
+    this.wires.push({ connects: wire, status: 0, xi: xi, yi: toConnect[0].location.y, xf: xf, yf: toConnect[1].location.y });
+
+    // nodeB.updateInputs(nodeA);
+    // nodeA.updateOutputs(nodeB);
+
+    // this.wires.push(wire);
   }
 
   evaluate() {
@@ -103,6 +130,16 @@ class LogicScreen {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     for (const wire of this.wires) {
+      const xi = wire.connects[0].name === "input" ? wire.connects[0].location.x + 23 : wire.connects[0].location.x;
+      const xf = wire.connects[1].name === "output" ? wire.connects[1].location.x - 23 : wire.connects[1].location.x;
+
+      console.log(xi, xf);
+
+      wire.xi = xi;
+      wire.yi = wire.connects[0].location.y;
+      wire.xf = xf;
+      wire.yf = wire.connects[1].location.y;
+
       ctx.lineWidth = 4;
       ctx.strokeStyle = wire.status === 0 ? "#1c1c1c" : "red";
       ctx.beginPath();
@@ -113,9 +150,23 @@ class LogicScreen {
     }
 
     ctx.lineWidth = 1;
-
+    let nodeOffset = 10;
     ctx.strokeStyle = "#bfbfbf";
     for (const ip of this.in_pins) {
+
+
+      ctx.beginPath();
+      ctx.moveTo(ip.location.x + 13, ip.location.y);
+      ctx.lineTo(ip.location.x + 13 + nodeOffset, ip.location.y);
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.beginPath();
+      ctx.fillStyle = "black";
+      ctx.arc(ip.location.x + 13 + nodeOffset, ip.location.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
       ctx.beginPath();
       ctx.arc(ip.location.x, ip.location.y, 13, 0, Math.PI * 2);
       ctx.closePath();
@@ -139,6 +190,19 @@ class LogicScreen {
     }
 
     for (const op of this.out_pins) {
+
+      ctx.beginPath();
+      ctx.moveTo(op.location.x - 13, op.location.y);
+      ctx.lineTo(op.location.x - 13 - nodeOffset, op.location.y);
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.beginPath();
+      ctx.fillStyle = "black";
+      ctx.arc(op.location.x - 13 - nodeOffset, op.location.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
       ctx.beginPath();
       ctx.arc(op.location.x, op.location.y, 13, 0, Math.PI * 2);
       ctx.closePath();
@@ -161,24 +225,117 @@ class LogicScreen {
     }
 
     for (const lg of this.logic_gates) {
-      // lg.name
-      ctx.fillStyle = "#1c1c1c";
-      ctx.strokeStyle = "#bfbfbf";
-      ctx.beginPath();
-      ctx.rect(lg.location.x, lg.location.y, 80, 40);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.font = "medium sans-serif";
-      ctx.fillText(lg.name, lg.location.x + 40, lg.location.y + 25);
-
+      this.logicGateRender(ctx, lg);
     }
 
   }
 
+  // Temp function: TODO: Split into smaller functions for code readability
+  /** @param {Circuit} logicGate  */
+  logicGateRender(ctx, logicGate) {
+
+    let n1 = logicGate.inputs.length;
+    let n2 = logicGate.outputs.length;
+    // arbitrary
+    let r = 5;
+    // arbitrary
+    let d = 75;
+    // middle of logic gate (40x80)
+    let midY = logicGate.location.y + (80 / 2);
+    let sep = (d - n1 * r) / (n1 + 1);
+    let sep2 = (d - n2 * r) / (n2 + 1);
+    let xPos = logicGate.location.x;
+    let nodeOffset = 10;
+    let rectHeight = 40;
+    let rectWidth = 80;
+
+    // input bar
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.moveTo(xPos, midY - (d / 2));
+    ctx.lineTo(xPos, midY + (d / 2));
+    ctx.stroke();
+    ctx.closePath();
+    // input nodes
+    for (let i = 1; i <= n1; i++) {
+      const yPos = (i * sep) + ((i - 1) * r) + midY - (d / 2);
+      // node
+      ctx.beginPath();
+      ctx.moveTo(xPos - nodeOffset, yPos);
+      ctx.lineTo(xPos, yPos);
+      ctx.stroke();
+      ctx.closePath();
+      // connecting wire to input bar
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(xPos - nodeOffset, yPos, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
+      logicGate.inputs[i - 1].location = { x: xPos - nodeOffset, y: yPos };
+
+    }
+
+
+    // output bar
+    let xPos2 = xPos + nodeOffset * 2 + rectWidth;
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.moveTo(xPos2, midY - (d / 2));
+    ctx.lineTo(xPos2, midY + (d / 2));
+    ctx.stroke();
+    ctx.closePath();
+
+    // output nodes
+    for (let j = 1; j <= n2; j++) {
+      const yPos = (j * sep2) + ((j - 1) * r) + midY - (d / 2);
+      // 
+      ctx.beginPath();
+      ctx.moveTo(xPos2 + nodeOffset, yPos);
+      ctx.lineTo(xPos2, yPos);
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(xPos2 + nodeOffset, yPos, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+
+      logicGate.outputs[j - 1].location = { x: xPos2 + nodeOffset, y: yPos };
+      logicGate.outputs[j - 1].r = r;
+    }
+
+    ctx.strokeStyle = "black";
+    // connect input bar to LG
+    ctx.beginPath();
+    ctx.moveTo(xPos, midY);
+    ctx.lineTo(xPos + nodeOffset, midY);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.strokeStyle = "black";
+    // connect output bar to LG
+    ctx.beginPath();
+    ctx.moveTo(xPos2, midY);
+    ctx.lineTo(xPos2 - nodeOffset, midY);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.rect(xPos + nodeOffset, midY - (rectHeight / 2), rectWidth, rectHeight);
+    ctx.closePath();
+    ctx.fillStyle = "#1c1c1c";
+    ctx.strokeStyle = "#bfbfbf";
+    ctx.fill();
+    ctx.stroke();
+
+
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.font = "medium sans-serif";
+    ctx.fillText(logicGate.name, logicGate.location.x + 55, logicGate.location.y + 45);
+
+  }
 
 
 }

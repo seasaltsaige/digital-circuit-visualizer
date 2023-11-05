@@ -2,19 +2,18 @@ class OutputNode {
   static name = "output";
   name = "output";
   label = "";
-  /** @type {0 | 1} */
-  output = 0;
+
   location = { x: 500, y: 200 };
   /**
    * @type {(InputNode | OutputNode)[]}
    */
   inputs = []
-  /** @type {(InputNode | OutputNode)[]} */
-  outputs = [];
+
   /** @type {number} */
   _id;
   /** @type {number} */
   value;
+  r = 13;
   constructor() {
     this._id = id;
     id++;
@@ -23,11 +22,10 @@ class OutputNode {
   /** @param {0 | 1} value */
   updateNode(value) {
     this.value = value;
-    this.output = value;
   }
 
   getValue() {
-    return this.output;
+    return this.value;
   }
 
   evaluate() {
@@ -35,6 +33,7 @@ class OutputNode {
     for (const input of this.inputs) {
       inputValues.push(input.getValue())
     }
+    console.log(inputValues);
     if (inputValues.includes(1)) this.updateNode(1);
     else this.updateNode(0);
   }
@@ -46,11 +45,5 @@ class OutputNode {
     for (const inp of inps) {
       this.inputs.push(inp);
     }
-  }
-
-  /** @param {...(OutputNode[])} outs */
-  updateOutputs(...outs) {
-    for (const out of outs)
-      this.outputs.push(out);
   }
 }

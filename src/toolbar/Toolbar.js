@@ -16,7 +16,6 @@ class Toolbar {
    * @type {{
    * pos: { x: number; y: number };
    * itemToMove: Circuit | InputNode | OutputNode | undefined;
-   * wiresToUpdate: { connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }[];
    * }}
    */
   cursor = {
@@ -25,7 +24,6 @@ class Toolbar {
       y: 0,
     },
     itemToMove: undefined,
-    wiresToUpdate: undefined,
   }
 
   connect_nodes = {
@@ -155,9 +153,11 @@ class Toolbar {
             }
             lScreen.addOutputPin(clickPosition, pValue);
           } else {
-            clickPosition.x -= 40;
-            clickPosition.y -= 24;
+            clickPosition.x -= 55;
+            clickPosition.y -= 38;
+            console.log(clickPosition);
             lScreen.addLogicGate(this.selectedLogicItem, clickPosition);
+            console.log(lScreen.logic_gates[lScreen.logic_gates.length - 1].location);
           }
         }
       } else if (this.selectedTool === "delete") {
@@ -183,35 +183,34 @@ class Toolbar {
         lScreen.render();
 
       } else if (this.selectedTool === "connect") {
-        // connection code here
-        const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
-        const out_pins = lScreen.out_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
-        const lgs = lScreen.logic_gates.filter(lg => this._withinRect_(lg.location, clickPosition, 80, 40));
+
+        const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_({ x: pin.location.x + 13 + 10, y: pin.location.y }, clickPosition, 5));
+        const out_pins = lScreen.out_pins.filter(pin => this._withinCircle_({ x: pin.location.x - 13 - 10, y: pin.location.y }, clickPosition, 5));
+
+        const logic_pins = [];
+        lScreen.logic_gates.forEach((lg) => {
+          logic_pins.push(...lg.inputs.filter(v => this._withinCircle_(v.location, clickPosition, 5)));
+          logic_pins.push(...lg.outputs.filter(v => this._withinCircle_(v.location, clickPosition, 5)));
+        });
+
 
         let item = null;
         if (in_pins.length > 0)
           item = in_pins[0];
         else if (out_pins.length > 0)
           item = out_pins[0];
-        else if (lgs.length > 0)
-          item = lgs[0];
-
+        else if (logic_pins.length > 0)
+          item = logic_pins[0];
         if (item === null) return;
 
-
-        // TODO: Update code so that connecting nodes backwards is ok, gonna be kinda difficult to do i think, if I even can
         if (this.connect_nodes.node_a === null) {
           this.connect_nodes.node_a = item;
         } else if (this.connect_nodes.node_b === null) {
           if (this.connect_nodes.node_a._id === item._id) return;
           this.connect_nodes.node_b = item;
 
-          const xi = this.connect_nodes.node_a.label ? this.connect_nodes.node_a.location.x : this.connect_nodes.node_a.location.x + 40;
-          const yi = this.connect_nodes.node_a.label ? this.connect_nodes.node_a.location.y : this.connect_nodes.node_a.location.y + 24;
-          const xf = this.connect_nodes.node_b.label ? this.connect_nodes.node_b.location.x : this.connect_nodes.node_b.location.x + 40;
-          const yf = this.connect_nodes.node_b.label ? this.connect_nodes.node_b.location.y : this.connect_nodes.node_b.location.y + 24;
 
-          lScreen.addWire({ connects: [this.connect_nodes.node_a, this.connect_nodes.node_b], xi, xf, yi, yf, status: 0 });
+          lScreen.addWire([this.connect_nodes.node_a, this.connect_nodes.node_b]);
 
           this.connect_nodes = {
             node_a: null,
@@ -224,6 +223,7 @@ class Toolbar {
         const pins = lScreen.in_pins.filter(v => this._withinCircle_(v.location, clickPosition, 13))
         if (pins.length > 0) {
           const pin = pins[0];
+          // TODO: Update backtracking logic to work with new nodes
           pin.updateNode(pin.value === 0 ? 1 : 0);
           lScreen.evaluate();
           lScreen.render();
@@ -237,12 +237,15 @@ class Toolbar {
     this.canvas.onmousedown = (ev) => {
       if (this.selectedTool !== "circuit") return;
       if (this.selectedLogicItem !== null) return;
+
+      // Drag code fixed
       const clickPosition = { x: ev.clientX, y: ev.clientY };
-      // Start with pins to test, TODO: add rest later
+
+
       let items = [];
       const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
       const out_pins = lScreen.out_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
-      const lgs = lScreen.logic_gates.filter(lg => this._withinRect_(lg.location, clickPosition, 80, 40));
+      const lgs = lScreen.logic_gates.filter(lg => this._withinRect_(lg.location, clickPosition, 100, 75));
       items.push(...in_pins);
       items.push(...out_pins);
       items.push(...lgs);
@@ -251,15 +254,11 @@ class Toolbar {
         const item = items[0];
         // I hate this
         if (item.label === undefined) {
-          clickPosition.x -= 40;
-          clickPosition.y -= 24;
+          clickPosition.x -= 55;
+          clickPosition.y -= 38;
         }
-
-        const wires = lScreen.wires.filter(v => v.connects[0]._id === item._id || v.connects[1]._id === item._id);
-
         this.cursor.itemToMove = item;
         this.cursor.pos = clickPosition;
-        if (wires.length > 0) this.cursor.wiresToUpdate = wires;
       }
 
     }
@@ -272,22 +271,8 @@ class Toolbar {
       this.cursor.pos = { x: ev.clientX, y: ev.clientY };
 
       if (this.cursor.itemToMove.label === undefined) {
-        this.cursor.pos.x -= 40;
-        this.cursor.pos.y -= 24;
-      }
-      if (this.cursor.wiresToUpdate) {
-        for (const wire of this.cursor.wiresToUpdate) {
-          if (wire) {
-            const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
-            if (ind === 0) {
-              wire.xi = ev.clientX;
-              wire.yi = ev.clientY;
-            } else {
-              wire.xf = ev.clientX;
-              wire.yf = ev.clientY;
-            }
-          }
-        }
+        this.cursor.pos.x -= 55;
+        this.cursor.pos.y -= 38;
       }
 
       this.cursor.itemToMove.location = this.cursor.pos;
@@ -300,28 +285,12 @@ class Toolbar {
       this.cursor.pos = { x: ev.clientX, y: ev.clientY };
 
       if (this.cursor.itemToMove.label === undefined) {
-        this.cursor.pos.x -= 40;
-        this.cursor.pos.y -= 24;
-      }
-
-      if (this.cursor.wiresToUpdate) {
-        for (const wire of this.cursor.wiresToUpdate) {
-          if (wire) {
-            const ind = wire.connects.findIndex(v => v._id === this.cursor.itemToMove._id);
-            if (ind === 0) {
-              wire.xi = ev.clientX;
-              wire.yi = ev.clientY;
-            } else {
-              wire.xf = ev.clientX;
-              wire.yf = ev.clientY;
-            }
-          }
-        }
+        this.cursor.pos.x -= 55;
+        this.cursor.pos.y -= 38;
       }
 
       this.cursor.itemToMove.location = this.cursor.pos;
       this.cursor.itemToMove = undefined;
-      this.cursor.wiresToUpdate = undefined;
       lScreen.render();
     }
 

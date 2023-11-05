@@ -2,6 +2,9 @@ class NOR extends Circuit {
   static name = "NOR";
   name = "NOR";
 
+  inputs = [new CircuitInputNode(), new CircuitInputNode()];
+  outputs = [new CircuitOutputNode(this)];
+
   constructor() {
     super();
   }

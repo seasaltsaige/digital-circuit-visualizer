@@ -7,11 +7,10 @@ class InputNode {
   location = { x: 200, y: 200 };
   /** @type {number} */
   _id;
-
-  // Input node is the only one with no inputs
+  r = 13;
 
   // Not good names
-  /** @type {(InputNode | OutputNode)[]} */
+  /** @type {(CircuitInputNode | OutputNode)[]} */
   outputs = [];
 
   constructor() {
