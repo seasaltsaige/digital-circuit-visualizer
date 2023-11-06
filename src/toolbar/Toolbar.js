@@ -237,15 +237,12 @@ class Toolbar {
         let pins = [];
         if (item.inputs) pins.push(...item.inputs);
         if (item.outputs) pins.push(...item.outputs);
-        // if (pins.length < 1) {}
-        console.log(pins);
+
         const wires_related = [];
         for (const pin of pins) {
           const wires = lScreen.wires.filter(wire => wire.connects[0]._id === pin._id || wire.connects[1]._id === pin._id);
           wires_related.push(...wires);
         }
-
-        console.log(wires_related);
 
         for (const w of wires_related) {
           const nodes = w.connects;

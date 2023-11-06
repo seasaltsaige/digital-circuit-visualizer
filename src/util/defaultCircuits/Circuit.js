@@ -2,19 +2,11 @@ class Circuit {
   static name = "";
   /** @type {(CircuitInputNode)[]} */
   inputs = [];
-
   /** @type {(CircuitOutputNode)[]} */
   outputs = [];
-
   value = 0;
-
   /** @type {number} */
   _id;
-
-  // probably used for custom circuits
-  // jk LogicScreen will handle this
-  // connections = [];
-
   location = { x: 0, y: 0 };
 
   constructor() {
