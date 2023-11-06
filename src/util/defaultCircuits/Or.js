@@ -12,7 +12,6 @@ class OR extends Circuit {
   __evaluate__() {
     if (this.inputs.length < 2) return 0;
     const vals = this.inputs.map(n => n.getValue());
-    // const num_ones = vals.filter(v => v === 1);
     if (vals.includes(1)) return 1;
     else return 0;
   }

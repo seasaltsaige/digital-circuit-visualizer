@@ -27,9 +27,6 @@ class NAND extends Circuit {
 
   getValue() {
     const circuitValue = this.__evaluate__();
-    for (const out of this.outputs) {
-      out.updateNode(circuitValue);
-    }
     this.value = circuitValue;
     return circuitValue;
   }

@@ -12,7 +12,7 @@ class OutputNode {
   /** @type {number} */
   _id;
   /** @type {number} */
-  value;
+  value = 0;
   r = 13;
   constructor() {
     this._id = id;
@@ -30,10 +30,9 @@ class OutputNode {
 
   evaluate() {
     const inputValues = [];
-    for (const input of this.inputs) {
+    for (const input of this.inputs)
       inputValues.push(input.getValue())
-    }
-    console.log(inputValues);
+
     if (inputValues.includes(1)) this.updateNode(1);
     else this.updateNode(0);
   }

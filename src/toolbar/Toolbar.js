@@ -50,6 +50,55 @@ class Toolbar {
     const controlItems = toolbarItems.filter(v => v.classList.contains("control"));
     const logicItems = toolbarItems.filter(v => !v.classList.contains("control"));
     const deselect = document.getElementsByClassName("deselect").item(0);
+    const custom_builder = document.getElementsByClassName("create-circuit").item(0);
+    /**
+     * @param {MouseEvent} ev 
+     */
+    custom_builder.onclick = (ev) => {
+      const in_pins = lScreen.in_pins;
+      const out_pins = lScreen.out_pins;
+
+      if (in_pins.length < 1) return alert("There are no input pins.");
+      if (out_pins.length < 1) return alert("There are no output pins.");
+      if (lScreen.wires.length < 1) return alert("There are no connections made.");
+      let LOGIC_NAME = prompt("What do you want to call this circuit:");
+      while (/\s/g.test(LOGIC_NAME))
+        LOGIC_NAME = prompt("Gate name may not contain whitespace:");
+
+      // Create the custom circuit builder, and add it to the list of available logic items
+      this.logicItems.push(new CustomCircuitBuilder(in_pins, out_pins, LOGIC_NAME));
+
+      lScreen.in_pins = [];
+      lScreen.out_pins = [];
+      lScreen.logic_gates = [];
+      lScreen.wires = [];
+      lScreen.render();
+
+      // Add the div to the dom for use
+      const lb = document.getElementsByClassName("logic")[0]
+      const custom_div = document.createElement("div");
+      const custom_div_name = document.createElement("h3");
+      custom_div_name.innerText = LOGIC_NAME;
+      custom_div.appendChild(custom_div_name);
+      custom_div.classList.add("item", LOGIC_NAME);
+      lb.appendChild(custom_div);
+
+      custom_div.onclick = (ev) => {
+        ev.preventDefault();
+        const target = ev.currentTarget;
+        const currentSelected = logicItems.find(v => v.classList.contains("selected"));
+        if (currentSelected !== undefined) {
+          currentSelected.classList.remove("selected");
+          target.classList.add("selected");
+        } else {
+          target.classList.add("selected");
+        }
+        const logicItemName = Array.from(target.classList).filter(n => n !== "item" && n !== "selected")[0];
+        this.selectedLogicItem = this.logicItems.find(clss => clss.name === logicItemName);
+      }
+
+    }
+
 
     /**
      * @param {MouseEvent} ev 
@@ -134,31 +183,35 @@ class Toolbar {
       const clickPosition = { x: ev.clientX, y: ev.clientY };
 
       if (this.selectedTool === "circuit") {
-        // Place holder, will want to be able to drag
-        if (this.selectedLogicItem !== null) {
-          if (this.selectedLogicItem.name === "input") {
-            let pValue = null;
-            let text = "Provide an Identifier for the pin:";
-            while (pValue === null || (lScreen.in_pins.find(v => v.label === pValue) !== undefined || lScreen.out_pins.find(v => v.label === pValue) !== undefined)) {
-              pValue = prompt(text);
-              text = "That identifier has already been used, please use a new one:"
-            }
-            lScreen.addInputPin(clickPosition, pValue);
-          } else if (this.selectedLogicItem.name === "output") {
-            let pValue = null;
-            let text = "Provide an Identifier for the pin:";
-            while (pValue === null || lScreen.out_pins.find(v => v.label === pValue) !== undefined || lScreen.in_pins.find(v => v.label === pValue) !== undefined) {
-              pValue = prompt(text);
-              text = "That identifier has already been used, please use a new one:"
-            }
-            lScreen.addOutputPin(clickPosition, pValue);
-          } else {
-            clickPosition.x -= 55;
-            clickPosition.y -= 38;
-            console.log(clickPosition);
-            lScreen.addLogicGate(this.selectedLogicItem, clickPosition);
-            console.log(lScreen.logic_gates[lScreen.logic_gates.length - 1].location);
+        if (this.selectedLogicItem === null) return
+        if (this.selectedLogicItem.name === "input") {
+          let pValue = null;
+          let text = "Provide an Identifier for the pin:";
+          while (pValue === null || (lScreen.in_pins.find(v => v.label === pValue) !== undefined || lScreen.out_pins.find(v => v.label === pValue) !== undefined)) {
+            pValue = prompt(text);
+            text = "That identifier has already been used, please use a new one:"
           }
+          lScreen.addInputPin(clickPosition, pValue);
+        } else if (this.selectedLogicItem.name === "output") {
+          let pValue = null;
+          let text = "Provide an Identifier for the pin:";
+          while (pValue === null || lScreen.out_pins.find(v => v.label === pValue) !== undefined || lScreen.in_pins.find(v => v.label === pValue) !== undefined) {
+            pValue = prompt(text);
+            text = "That identifier has already been used, please use a new one:"
+          }
+          lScreen.addOutputPin(clickPosition, pValue);
+        } else {
+          clickPosition.x -= 55;
+          clickPosition.y -= 38;
+          if (this.selectedLogicItem.builder) {
+            const gate = this.selectedLogicItem.build();
+            gate.location = clickPosition;
+            lScreen.logic_gates.push(gate);
+            lScreen.render();
+
+            // lScreen.addLogicGate(, clickPosition);
+          } else
+            lScreen.addLogicGate(this.selectedLogicItem, clickPosition);
         }
       } else if (this.selectedTool === "delete") {
         // TODO: Delete wires associated with node that gets deleted
@@ -223,7 +276,6 @@ class Toolbar {
         const pins = lScreen.in_pins.filter(v => this._withinCircle_(v.location, clickPosition, 13))
         if (pins.length > 0) {
           const pin = pins[0];
-          // TODO: Update backtracking logic to work with new nodes
           pin.updateNode(pin.value === 0 ? 1 : 0);
           lScreen.evaluate();
           lScreen.render();
@@ -240,7 +292,6 @@ class Toolbar {
 
       // Drag code fixed
       const clickPosition = { x: ev.clientX, y: ev.clientY };
-
 
       let items = [];
       const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
