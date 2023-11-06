@@ -144,17 +144,19 @@ class Toolbar {
 
           for (const item of logicItems)
             item.classList.remove("selected");
-
           this.selectedLogicItem = null;
         } else if (this.selectedTool === "connect") {
           this.canvas.classList.forEach(v => this.canvas.classList.remove(v));
           this.canvas.classList.add("connect");
           for (const item of logicItems)
             item.classList.remove("selected");
-
+          this.selectedLogicItem = null;
         } else {
           this.canvas.classList.forEach(v => this.canvas.classList.remove(v));
           this.canvas.classList.add("pointer");
+          for (const item of logicItems)
+            item.classList.remove("selected");
+          this.selectedLogicItem = null;
         }
       }
 
