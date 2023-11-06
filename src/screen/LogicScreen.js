@@ -71,17 +71,15 @@ class LogicScreen {
     const first_node = toConnect[0];
     const second_node = toConnect[1];
 
-    if (second_node.name === "input") toConnect.reverse();
-    else if (first_node.name === "output") toConnect.reverse();
-    else if (second_node.name === "circuit_output") toConnect.reverse();
-    else if (first_node.name === "circuit_input") toConnect.reverse();
+    if (second_node.name === "input" || first_node.name === "output" || second_node.name === "circuit_output" || first_node.name === "circuit_input")
+      toConnect.reverse();
 
+    // render offset for inputs and outputs
     const xi = toConnect[0].name === "input" ? toConnect[0].location.x + 23 : toConnect[0].location.x;
     const xf = toConnect[1].name === "output" ? toConnect[1].location.x - 23 : toConnect[1].location.x;
 
     const a = toConnect[0];
     const b = toConnect[1];
-
 
     a.updateOutputs(b);
     b.updateInputs(a);
@@ -90,11 +88,9 @@ class LogicScreen {
   }
 
   evaluate() {
-
     // Back to front
     for (const outNode of this.out_pins)
       outNode.evaluate();
-
 
     for (const wire of this.wires) {
       if ((wire.connects[0].value === 1))
@@ -102,6 +98,8 @@ class LogicScreen {
       else wire.status = 0;
     }
   }
+
+
 
   render() {
 
@@ -134,8 +132,6 @@ class LogicScreen {
     let nodeOffset = 10;
     ctx.strokeStyle = "#bfbfbf";
     for (const ip of this.in_pins) {
-
-
       ctx.beginPath();
       ctx.moveTo(ip.location.x + 13, ip.location.y);
       ctx.lineTo(ip.location.x + 13 + nodeOffset, ip.location.y);

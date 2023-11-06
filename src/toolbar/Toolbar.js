@@ -36,10 +36,11 @@ class Toolbar {
     this.logicItems.push(OutputNode);
     this.logicItems.push(AND);
     this.logicItems.push(NOT);
-    this.logicItems.push(OR);
-    this.logicItems.push(NAND);
-    this.logicItems.push(NOR);
-    this.logicItems.push(XOR);
+    // let user build for themselves
+    // this.logicItems.push(OR);
+    // this.logicItems.push(NAND);
+    // this.logicItems.push(NOR);
+    // this.logicItems.push(XOR);
     this.canvas = document.getElementById("screen");
 
     this._init_();
@@ -82,6 +83,8 @@ class Toolbar {
       custom_div.appendChild(custom_div_name);
       custom_div.classList.add("item", LOGIC_NAME);
       lb.appendChild(custom_div);
+
+      logicItems.push(custom_div);
 
       custom_div.onclick = (ev) => {
         ev.preventDefault();
@@ -203,23 +206,20 @@ class Toolbar {
         } else {
           clickPosition.x -= 55;
           clickPosition.y -= 38;
+          // custom gate case
           if (this.selectedLogicItem.builder) {
             const gate = this.selectedLogicItem.build();
             gate.location = clickPosition;
             lScreen.logic_gates.push(gate);
             lScreen.render();
-
-            // lScreen.addLogicGate(, clickPosition);
           } else
             lScreen.addLogicGate(this.selectedLogicItem, clickPosition);
         }
       } else if (this.selectedTool === "delete") {
-        // TODO: Delete wires associated with node that gets deleted
-
 
         const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
         const out_pins = lScreen.out_pins.filter(pin => this._withinCircle_(pin.location, clickPosition, 13));
-        const lgs = lScreen.logic_gates.filter(lg => this._withinRect_(lg.location, clickPosition, 80, 40));
+        const lgs = lScreen.logic_gates.filter(lg => this._withinRect_(lg.location, clickPosition, 100, 75));
 
         let item = null;
         if (in_pins.length > 0) {
@@ -231,7 +231,37 @@ class Toolbar {
         } else if (lgs.length > 0) {
           item = lgs[0];
           lScreen.logic_gates.splice(lScreen.logic_gates.findIndex(v => v.location.x === item.location.x && v.location.y === item.location.y), 1);
+
         }
+
+        let pins = [];
+        if (item.inputs) pins.push(...item.inputs);
+        if (item.outputs) pins.push(...item.outputs);
+        // if (pins.length < 1) {}
+        console.log(pins);
+        const wires_related = [];
+        for (const pin of pins) {
+          const wires = lScreen.wires.filter(wire => wire.connects[0]._id === pin._id || wire.connects[1]._id === pin._id);
+          wires_related.push(...wires);
+        }
+
+        console.log(wires_related);
+
+        for (const w of wires_related) {
+          const nodes = w.connects;
+          const a = nodes[0];
+          const b = nodes[1];
+          // remove relation
+          if (a.name === "input" || a.name === "circuit_output") a.outputs.splice(a.outputs.findIndex(v => v._id === b._id), 1);
+
+          if (b.name === "output") b.inputs.splice(b.inputs.findIndex(v => v._id === a._id), 1);
+          if (b.name === "circuit_input") b.input = null;
+
+          // remove wire
+          lScreen.wires.splice(lScreen.wires.findIndex(wire => wire.status === w.status && wire.xi === w.xi && wire.xf === w.xf && wire.yi === w.yi && wire.yf === wire.yf), 1);
+        }
+
+
 
         lScreen.render();
 
