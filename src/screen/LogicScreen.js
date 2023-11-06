@@ -1,29 +1,15 @@
 class LogicScreen {
-
-  /**
-   * @type {InputNode[]}
-   */
+  /** @type {InputNode[]} */
   in_pins = [];
-  /**
-   * @type {OutputNode[]}
-   */
+  /** @type {OutputNode[]} */
   out_pins = [];
   /** @type {Circuit[]} */
   logic_gates = [];
-
-
-  // For now a straight line connecting is fine, don't think ill change that
-
-  /**
-   * @type {{ connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }[]}
-   */
+  /** @type {{ connects: [any, any]; xi: number; yi: number; xf: number; yf: number; status: 0 | 1 }[]} */
   wires = [];
   /** @type {CanvasRenderingContext2D} */
   ctx;
-
-  /** 
-   * @param {CanvasRenderingContext2D} ctx 
-   */
+  /** @param {CanvasRenderingContext2D} ctx */
   constructor(ctx) {
     this.ctx = ctx;
   }
@@ -120,40 +106,22 @@ class LogicScreen {
       wire.yf = wire.connects[1].location.y;
 
       ctx.lineWidth = 4;
-      ctx.strokeStyle = wire.status === 0 ? "#1c1c1c" : "red";
-      ctx.beginPath();
-      ctx.moveTo(wire.xi, wire.yi);
-      ctx.lineTo(wire.xf, wire.yf);
-      ctx.stroke();
-      ctx.closePath();
+      this._line_(ctx, wire.xi, wire.yi, wire.xf, wire.yf, wire.status === 0 ? "#1c1c1c" : "red")
     }
 
     ctx.lineWidth = 1;
     let nodeOffset = 10;
-    ctx.strokeStyle = "#bfbfbf";
+
     for (const ip of this.in_pins) {
-      ctx.beginPath();
-      ctx.moveTo(ip.location.x + 13, ip.location.y);
-      ctx.lineTo(ip.location.x + 13 + nodeOffset, ip.location.y);
-      ctx.stroke();
-      ctx.closePath();
-
-      ctx.beginPath();
-      ctx.fillStyle = "black";
-      ctx.arc(ip.location.x + 13 + nodeOffset, ip.location.y, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.closePath();
-
-      ctx.beginPath();
-      ctx.arc(ip.location.x, ip.location.y, 13, 0, Math.PI * 2);
-      ctx.closePath();
+      this._line_(ctx, ip.location.x + 13, ip.location.y, ip.location.x + 13 + nodeOffset, ip.location.y, "#bfbfbf")
+      this._arc_(ctx, ip.location.x + 13 + nodeOffset, ip.location.y, 5, 0, Math.PI * 2, "black");
+      this._arc_(ctx, ip.location.x, ip.location.y, 13, 0, Math.PI * 2, "black");
 
       ctx.fillStyle = "white";
       ctx.textAlign = "right";
       ctx.font = "medium sans-serif";
       ctx.fillText(ip.label, ip.location.x - 15, ip.location.y + 5);
       const pin_value = ip.getValue();
-
 
       if (pin_value) ctx.fillStyle = "red";
       else ctx.fillStyle = "#1c1c1c";
@@ -167,22 +135,9 @@ class LogicScreen {
     }
 
     for (const op of this.out_pins) {
-
-      ctx.beginPath();
-      ctx.moveTo(op.location.x - 13, op.location.y);
-      ctx.lineTo(op.location.x - 13 - nodeOffset, op.location.y);
-      ctx.stroke();
-      ctx.closePath();
-
-      ctx.beginPath();
-      ctx.fillStyle = "black";
-      ctx.arc(op.location.x - 13 - nodeOffset, op.location.y, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.closePath();
-
-      ctx.beginPath();
-      ctx.arc(op.location.x, op.location.y, 13, 0, Math.PI * 2);
-      ctx.closePath();
+      this._line_(ctx, op.location.x - 13, op.location.y, op.location.x - 13 - nodeOffset, op.location.y, "#bfbfbf");
+      this._arc_(ctx, op.location.x - 13 - nodeOffset, op.location.y, 5, 0, Math.PI * 2, "black");
+      this._arc_(ctx, op.location.x, op.location.y, 13, 0, Math.PI * 2);
 
       ctx.fillStyle = "white";
       ctx.textAlign = "left";
@@ -215,7 +170,8 @@ class LogicScreen {
     let n2 = logicGate.outputs.length;
     // arbitrary
     let r = 5;
-    // arbitrary
+
+    // TODO: Bar length should vary with amount of inputs as well ideally.
     let d = 75;
     // middle of logic gate (40x80)
     let midY = logicGate.location.y + (80 / 2);
@@ -227,86 +183,53 @@ class LogicScreen {
     let rectWidth = 80;
 
     // input bar
-    ctx.beginPath();
-    ctx.strokeStyle = "black";
-    ctx.moveTo(xPos, midY - (d / 2));
-    ctx.lineTo(xPos, midY + (d / 2));
-    ctx.stroke();
-    ctx.closePath();
+    this._line_(ctx, xPos, midY - (d / 2), xPos, midY + (d / 2), "black");
+
     // input nodes
     for (let i = 1; i <= n1; i++) {
       const yPos = (i * sep) + ((i - 1) * r) + midY - (d / 2);
-      // node
-      ctx.beginPath();
-      ctx.moveTo(xPos - nodeOffset, yPos);
-      ctx.lineTo(xPos, yPos);
-      ctx.stroke();
-      ctx.closePath();
-      // connecting wire to input bar
-      ctx.fillStyle = "black";
-      ctx.beginPath();
-      ctx.arc(xPos - nodeOffset, yPos, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.closePath();
 
+      // connecting line between bar and node
+      this._line_(ctx, xPos - nodeOffset, yPos, xPos, yPos, "black");
+
+      // input node
+      this._arc_(ctx, xPos - nodeOffset, yPos, r, 0, Math.PI * 2, "black");
       logicGate.inputs[i - 1].location = { x: xPos - nodeOffset, y: yPos };
-
+      logicGate.inputs[i - 1].r = r;
     }
-
 
     // output bar
     let xPos2 = xPos + nodeOffset * 2 + rectWidth;
-    ctx.beginPath();
-    ctx.strokeStyle = "black";
-    ctx.moveTo(xPos2, midY - (d / 2));
-    ctx.lineTo(xPos2, midY + (d / 2));
-    ctx.stroke();
-    ctx.closePath();
+    this._line_(ctx, xPos2, midY - (d / 2), xPos2, midY + (d / 2), "black");
+
 
     // output nodes
     for (let j = 1; j <= n2; j++) {
       const yPos = (j * sep2) + ((j - 1) * r) + midY - (d / 2);
-      // 
-      ctx.beginPath();
-      ctx.moveTo(xPos2 + nodeOffset, yPos);
-      ctx.lineTo(xPos2, yPos);
-      ctx.stroke();
-      ctx.closePath();
 
-      ctx.fillStyle = "black";
-      ctx.beginPath();
-      ctx.arc(xPos2 + nodeOffset, yPos, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.closePath();
+      // connect output node to bar
+      this._line_(ctx, xPos2 + nodeOffset, yPos, xPos, yPos, "black");
+
+      // output node
+
+      this._arc_(ctx, xPos2 + nodeOffset, yPos, r, 0, Math.PI * 2, "black");
 
       logicGate.outputs[j - 1].location = { x: xPos2 + nodeOffset, y: yPos };
       logicGate.outputs[j - 1].r = r;
     }
 
-    ctx.strokeStyle = "black";
-    // connect input bar to LG
-    ctx.beginPath();
-    ctx.moveTo(xPos, midY);
-    ctx.lineTo(xPos + nodeOffset, midY);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.strokeStyle = "black";
-    // connect output bar to LG
-    ctx.beginPath();
-    ctx.moveTo(xPos2, midY);
-    ctx.lineTo(xPos2 - nodeOffset, midY);
-    ctx.stroke();
-    ctx.closePath();
-
+    // circuit body
     ctx.beginPath();
     ctx.rect(xPos + nodeOffset, midY - (rectHeight / 2), rectWidth, rectHeight);
     ctx.closePath();
+
     ctx.fillStyle = "#1c1c1c";
     ctx.strokeStyle = "#bfbfbf";
+
     ctx.fill();
     ctx.stroke();
 
-
+    // circuit name
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.font = "medium sans-serif";
@@ -314,5 +237,21 @@ class LogicScreen {
 
   }
 
+  // Util for drawing circuit
+  _line_(ctx, startx, starty, endx, endy, color) {
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.moveTo(startx, starty);
+    ctx.lineTo(endx, endy);
+    ctx.stroke();
+    ctx.closePath();
+  }
 
+  _arc_(ctx, x, y, r, sa, ea, color) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, sa, ea);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.closePath();
+  }
 }
