@@ -22,13 +22,13 @@ class CustomCircuit extends Circuit {
     this.name = name;
     this.simulate(inputs, outputs);
 
-    for (const _ of inputs) {
-      const cin = new CircuitInputNode();
+    for (const inp of inputs) {
+      const cin = new CircuitInputNode(inp.label);
       this.inputs.push(cin);
     }
 
-    for (const _ of outputs) {
-      const cout = new CircuitOutputNode(this);
+    for (const oup of outputs) {
+      const cout = new CircuitOutputNode(this, oup.label);
       this.outputs.push(cout);
     }
 

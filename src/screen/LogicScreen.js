@@ -163,7 +163,9 @@ class LogicScreen {
   }
 
   // Temp function: TODO: Split into smaller functions for code readability
-  /** @param {Circuit} logicGate  */
+  /**
+   * @param {CanvasRenderingContext2D} ctx  
+   * @param {Circuit} logicGate  */
   logicGateRender(ctx, logicGate) {
 
     let n1 = logicGate.inputs.length;
@@ -172,51 +174,72 @@ class LogicScreen {
     let r = 5;
 
     // TODO: Bar length should vary with amount of inputs as well ideally.
-    let d = 75;
+    const d1 = Math.max((r * 2) * n1 + (r * n1), 75);
+    const d2 = Math.max((r * 2) * n2 + (r * n2), 75);
+
+    // let d = 75;
     // middle of logic gate (40x80)
     let midY = logicGate.location.y + (80 / 2);
-    let sep = (d - n1 * r) / (n1 + 1);
-    let sep2 = (d - n2 * r) / (n2 + 1);
+    let sep = (d1 - n1 * r) / (n1 + 1);
+    let sep2 = (d2 - n2 * r) / (n2 + 1);
     let xPos = logicGate.location.x;
     let nodeOffset = 10;
     let rectHeight = 40;
     let rectWidth = 80;
 
     // input bar
-    this._line_(ctx, xPos, midY - (d / 2), xPos, midY + (d / 2), "black");
+    this._line_(ctx, xPos, midY - (d1 / 2), xPos, midY + (d1 / 2), "black");
 
     // input nodes
     for (let i = 1; i <= n1; i++) {
-      const yPos = (i * sep) + ((i - 1) * r) + midY - (d / 2);
+      const inpNode = logicGate.inputs[i - 1];
+
+      const yPos = (i * sep) + ((i - 1) * r) + midY - (d1 / 2);
 
       // connecting line between bar and node
       this._line_(ctx, xPos - nodeOffset, yPos, xPos, yPos, "black");
 
       // input node
       this._arc_(ctx, xPos - nodeOffset, yPos, r, 0, Math.PI * 2, "black");
-      logicGate.inputs[i - 1].location = { x: xPos - nodeOffset, y: yPos };
-      logicGate.inputs[i - 1].r = r;
+      inpNode.location = { x: xPos - nodeOffset, y: yPos };
+      inpNode.r = r;
+
+      ctx.fillStyle = "white";
+      ctx.textAlign = "right";
+      ctx.font = "small sans-serif";
+      ctx.fillText(inpNode.label || "", inpNode.location.x - 7, inpNode.location.y + 3);
     }
 
     // output bar
     let xPos2 = xPos + nodeOffset * 2 + rectWidth;
-    this._line_(ctx, xPos2, midY - (d / 2), xPos2, midY + (d / 2), "black");
+    this._line_(ctx, xPos2, midY - (d2 / 2), xPos2, midY + (d2 / 2), "black");
 
 
     // output nodes
     for (let j = 1; j <= n2; j++) {
-      const yPos = (j * sep2) + ((j - 1) * r) + midY - (d / 2);
+      const oupNode = logicGate.outputs[j - 1];
+      const yPos = (j * sep2) + ((j - 1) * r) + midY - (d2 / 2);
 
       // connect output node to bar
-      this._line_(ctx, xPos2 + nodeOffset, yPos, xPos, yPos, "black");
+      this._line_(ctx, xPos2 + nodeOffset, yPos, xPos2, yPos, "black");
 
       // output node
 
       this._arc_(ctx, xPos2 + nodeOffset, yPos, r, 0, Math.PI * 2, "black");
 
-      logicGate.outputs[j - 1].location = { x: xPos2 + nodeOffset, y: yPos };
-      logicGate.outputs[j - 1].r = r;
+      oupNode.location = { x: xPos2 + nodeOffset, y: yPos };
+      oupNode.r = r;
+
+      ctx.fillStyle = "white";
+      ctx.textAlign = "left";
+      ctx.font = "small sans-serif";
+      ctx.fillText(oupNode.label || "", oupNode.location.x + 7, oupNode.location.y + 3);
+
     }
+
+    this._line_(ctx, xPos + nodeOffset, midY, xPos, midY, "black");
+
+    this._line_(ctx, xPos2 - nodeOffset, midY, xPos2, midY, "black");
 
     // circuit body
     ctx.beginPath();

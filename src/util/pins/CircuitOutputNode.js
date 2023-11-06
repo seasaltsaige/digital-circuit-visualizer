@@ -5,10 +5,10 @@ class CircuitOutputNode extends OutputNode {
   parent = null;
   name = "circuit_output";
 
-  constructor(parent) {
+  constructor(parent, label) {
     super();
     this.parent = parent;
-    this.label = null;
+    this.label = label;
   }
 
   updateOutputs(...outs) {

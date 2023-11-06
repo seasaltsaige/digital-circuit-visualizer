@@ -5,9 +5,9 @@ class CircuitInputNode extends InputNode {
   parent = null;
   name = "circuit_input";
 
-  constructor() {
+  constructor(label) {
     super();
-    this.label = null;
+    this.label = label;
   }
 
   getValue() {
