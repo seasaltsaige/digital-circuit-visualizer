@@ -16,7 +16,7 @@ class CircuitOutputNode extends OutputNode {
   }
 
   getValue() {
-    const val = this.parent.getValue();
+    const val = this.parent.getValue(this._id);
     this.value = val;
     return val;
   }

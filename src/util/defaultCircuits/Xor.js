@@ -28,12 +28,7 @@ class XOR extends Circuit {
 
   getValue() {
     const circuitValue = this.__evaluate__();
-    for (const out of this.outputs) {
-      // out.updateNode(circuitValue);
-    }
     this.value = circuitValue;
-
-    console.log(this.value, circuitValue);
     return circuitValue;
   }
 }

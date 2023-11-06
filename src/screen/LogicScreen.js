@@ -53,7 +53,6 @@ class LogicScreen {
   }
 
   /**
-   * 
    * @param {typeof Circuit} gate 
    * @param {{x: number; y: number}} location 
    */
@@ -66,13 +65,6 @@ class LogicScreen {
     }
   }
 
-  // TODO: Connect new nodes together.
-  // Input to lg:
-  // Input: [Outputs -> circuit input]
-  // Lg -> Lg
-  // circuit output -> circuit input
-  // lg -> output
-  // circuit output -> output
   /** @param {[InputNode | OutputNode | CircuitInputNode | CircuitOutputNode, InputNode | OutputNode | CircuitInputNode | CircuitOutputNode]} wire */
   addWire(wire) {
     const toConnect = wire;
@@ -84,13 +76,9 @@ class LogicScreen {
     else if (second_node.name === "circuit_output") toConnect.reverse();
     else if (first_node.name === "circuit_input") toConnect.reverse();
 
-    console.log(toConnect);
-
     const xi = toConnect[0].name === "input" ? toConnect[0].location.x + 23 : toConnect[0].location.x;
-    console.log(xi, "addwire");
     const xf = toConnect[1].name === "output" ? toConnect[1].location.x - 23 : toConnect[1].location.x;
 
-    console.log(toConnect);
     const a = toConnect[0];
     const b = toConnect[1];
 
@@ -99,11 +87,6 @@ class LogicScreen {
     b.updateInputs(a);
 
     this.wires.push({ connects: wire, status: 0, xi: xi, yi: toConnect[0].location.y, xf: xf, yf: toConnect[1].location.y });
-
-    // nodeB.updateInputs(nodeA);
-    // nodeA.updateOutputs(nodeB);
-
-    // this.wires.push(wire);
   }
 
   evaluate() {
@@ -122,7 +105,7 @@ class LogicScreen {
 
   render() {
 
-    this.evaluate();
+    // this.evaluate();
     const ctx = this.ctx;
     const canvas = ctx.canvas;
 
@@ -132,8 +115,6 @@ class LogicScreen {
     for (const wire of this.wires) {
       const xi = wire.connects[0].name === "input" ? wire.connects[0].location.x + 23 : wire.connects[0].location.x;
       const xf = wire.connects[1].name === "output" ? wire.connects[1].location.x - 23 : wire.connects[1].location.x;
-
-      console.log(xi, xf);
 
       wire.xi = xi;
       wire.yi = wire.connects[0].location.y;
@@ -333,7 +314,7 @@ class LogicScreen {
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.font = "medium sans-serif";
-    ctx.fillText(logicGate.name, logicGate.location.x + 55, logicGate.location.y + 45);
+    ctx.fillText(logicGate.name, logicGate.location.x + 50, logicGate.location.y + 46);
 
   }
 

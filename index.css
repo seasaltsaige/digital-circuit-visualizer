@@ -147,11 +147,36 @@ canvas {
   cursor: pointer;
 }
 
-.connecting_items {
+
+
+.create-circuit {
   position: absolute;
-  left: 100px;
-  bottom: 100px;
-  width: fit-content;
-  height: fit-content;
+  left: 60px;
+  bottom: 50px;
+  width: 250px;
+  height: 60px;
+  outline: 1px solid white;
   background-color: #1c1c1c;
+  color: white;
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.subtext {
+  user-select: none;
+  position: absolute;
+  left: 20px;
+  bottom: 0px;
+  background-color: #1c1c1c;
+  color: white;
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 20px;
 }
