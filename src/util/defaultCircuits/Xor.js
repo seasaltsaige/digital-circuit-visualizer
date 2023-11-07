@@ -2,7 +2,6 @@ class XOR extends Circuit {
   static name = "XOR";
   name = "XOR";
 
-  // seemingly weird xor behavior with multiple outputs
   inputs = [new CircuitInputNode(), new CircuitInputNode()];
   outputs = [new CircuitOutputNode(this)];
   constructor() {

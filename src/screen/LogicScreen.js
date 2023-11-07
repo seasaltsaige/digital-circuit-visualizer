@@ -88,8 +88,6 @@ class LogicScreen {
 
 
   render() {
-
-    // this.evaluate();
     const ctx = this.ctx;
     const canvas = ctx.canvas;
 

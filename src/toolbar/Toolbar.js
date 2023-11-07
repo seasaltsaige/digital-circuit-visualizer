@@ -19,17 +19,11 @@ class Toolbar {
    * }}
    */
   cursor = {
-    pos: {
-      x: 0,
-      y: 0,
-    },
+    pos: { x: 0, y: 0 },
     itemToMove: undefined,
-  }
+  };
 
-  connect_nodes = {
-    node_a: null,
-    node_b: null,
-  }
+  connect_nodes = { node_a: null, node_b: null };
 
   constructor() {
     this.logicItems.push(InputNode);
@@ -59,16 +53,17 @@ class Toolbar {
       const in_pins = lScreen.in_pins;
       const out_pins = lScreen.out_pins;
 
-      if (in_pins.length < 1) return alert("There are no input pins.");
-      if (out_pins.length < 1) return alert("There are no output pins.");
-      if (lScreen.wires.length < 1) return alert("There are no connections made.");
+      if (in_pins.length < 1) return alert("You must have at least one input pin.");
+      if (out_pins.length < 1) return alert("You must have at least one output pin.");
+      if (lScreen.wires.length < 1) return alert("You must make at least one connection.");
       let LOGIC_NAME = prompt("What do you want to call this circuit:");
       while (/\s/g.test(LOGIC_NAME))
-        LOGIC_NAME = prompt("Gate name may not contain whitespace:");
+        LOGIC_NAME = prompt("Logic Gate name may not contain whitespace:");
 
       // Create the custom circuit builder, and add it to the list of available logic items
       this.logicItems.push(new CustomCircuitBuilder(in_pins, out_pins, LOGIC_NAME));
 
+      // Remove everything from the screen, and reset
       lScreen.in_pins = [];
       lScreen.out_pins = [];
       lScreen.logic_gates = [];
@@ -113,13 +108,8 @@ class Toolbar {
       this.selectedLogicItem = null;
     }
 
-
-
     for (const ci of controlItems) {
-      /**
-       * 
-       * @param {MouseEvent} ev 
-       */
+      /** @param {MouseEvent} ev */
       ci.onclick = (ev) => {
         ev.preventDefault();
         const targ = ev.currentTarget;
@@ -136,12 +126,10 @@ class Toolbar {
 
         if (this.selectedTool === "circuit") {
           this.canvas.classList.forEach(v => this.canvas.classList.remove(v));
-
           this.canvas.classList.add("hand");
         } else if (this.selectedTool === "delete") {
           this.canvas.classList.forEach(v => this.canvas.classList.remove(v));
           this.canvas.classList.add("delete")
-
           for (const item of logicItems)
             item.classList.remove("selected");
           this.selectedLogicItem = null;
@@ -163,10 +151,6 @@ class Toolbar {
     }
 
     for (const li of logicItems) {
-
-      /**
-       * @param {MouseEvent} ev
-       */
       li.onclick = (ev) => {
         ev.preventDefault();
         const target = ev.currentTarget;
@@ -254,14 +238,11 @@ class Toolbar {
           if (a.name === "input" || a.name === "circuit_output") a.outputs.splice(a.outputs.findIndex(v => v._id === b._id), 1);
 
           if (b.name === "output") b.inputs.splice(b.inputs.findIndex(v => v._id === a._id), 1);
-          if (b.name === "circuit_input") b.input = null;
+          else if (b.name === "circuit_input") b.input = null;
 
           // remove wire
           lScreen.wires.splice(lScreen.wires.findIndex(wire => wire.status === w.status && wire.xi === w.xi && wire.xf === w.xf && wire.yi === w.yi && wire.yf === wire.yf), 1);
         }
-
-
-
         lScreen.render();
 
       } else if (this.selectedTool === "connect") {
@@ -276,6 +257,7 @@ class Toolbar {
         });
 
 
+        // TODO: Maybe reffactor these kinds of things
         let item = null;
         if (in_pins.length > 0)
           item = in_pins[0];
@@ -291,35 +273,28 @@ class Toolbar {
           if (this.connect_nodes.node_a._id === item._id) return;
           this.connect_nodes.node_b = item;
 
-
           lScreen.addWire([this.connect_nodes.node_a, this.connect_nodes.node_b]);
-
-          this.connect_nodes = {
-            node_a: null,
-            node_b: null,
-          }
+          this.connect_nodes = { node_a: null, node_b: null };
         }
 
         lScreen.render();
       } else {
         const pins = lScreen.in_pins.filter(v => this._withinCircle_(v.location, clickPosition, 13))
-        if (pins.length > 0) {
-          const pin = pins[0];
-          pin.updateNode(pin.value === 0 ? 1 : 0);
-          lScreen.evaluate();
-          lScreen.render();
-        }
+        if (pins.length < 1) return;
+
+        const pin = pins[0];
+        pin.updateNode(pin.value === 0 ? 1 : 0);
+        lScreen.evaluate();
+        lScreen.render();
       }
 
     }
 
-    // I hate that this is in the toolbar class, but oh well
     /** @param {MouseEvent} ev */
     this.canvas.onmousedown = (ev) => {
       if (this.selectedTool !== "circuit") return;
       if (this.selectedLogicItem !== null) return;
 
-      // Drag code fixed
       const clickPosition = { x: ev.clientX, y: ev.clientY };
 
       let items = [];

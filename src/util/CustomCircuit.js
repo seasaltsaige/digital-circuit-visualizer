@@ -10,9 +10,6 @@ class CustomCircuit extends Circuit {
    * @type {CircuitOutputNode[]}
    */
   outputs = [];
-
-  // TODO: Use labels in rendering of custom circuit, should hopefully make it a bit clearer where the inputs go
-
   truth_table = [];
 
   input_map = new Map();

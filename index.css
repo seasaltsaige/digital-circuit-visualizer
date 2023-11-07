@@ -15,7 +15,7 @@ h3 {
   position: absolute;
   width: 90%;
   height: 150px;
-  background-color: #1c1c1c;
+  background-color: #1f1f1f;
   left: 5%;
   top: 20px;
 
@@ -25,7 +25,7 @@ h3 {
   align-items: center;
   justify-items: center;
   align-content: center;
-  border-radius: 30px;
+  border-radius: 15px;
 }
 
 .toolbar>div {
@@ -64,7 +64,6 @@ h3 {
 }
 
 .logic {
-  /* width: 100%; */
   overflow: hidden;
 }
 
@@ -109,6 +108,16 @@ canvas {
   border-radius: 20px;
   margin-left: 20px;
   cursor: pointer;
+  transition: 100ms;
+}
+
+.item:hover {
+  outline: 2px solid rgba(255, 255, 255, 0.754);
+  transition: 100ms;
+}
+
+.logic>.item>h3 {
+  font-size: 17px;
 }
 
 
@@ -124,12 +133,11 @@ canvas {
 
 .selected {
   outline-color: green;
+  background-color: #141414;
+  transform: translateY(7px);
+  transition: 50ms;
+  border-radius: 30px;
 }
-
-/* * {
-  cursor: pointer
-} */
-
 
 .hand {
   cursor: pointer;
