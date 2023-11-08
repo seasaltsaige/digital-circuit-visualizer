@@ -5,14 +5,14 @@ Sparking insperation from [Logisim](http://www.cburch.com/logisim/), I decided t
 When you open the website, you start with only the most basic of logic gates and utilites. You are given your **Input** and **Output** pins, along with **AND** and **NOT** gates. From there, since these are functionally complete components, you are free to build whatever circuit you want.
 
 Bellow is a the transformation of an OR gate, from  three **NOT** gates and one **AND** gate.
-![Or Gate](ORGATE.png)
+![Or Gate](./images/ORGATE.png)
 
 A bit more complex, building a four bit adder from 4 sets of full adders.
 
 From
-![Four Bit Adder](4BITADDER_1.png)
+![Four Bit Adder](./images/4BITADDER_1.png)
 To <br>
-![Four Bit Adder](4BITADDER_2.png)
+![Four Bit Adder](./images/4BITADDER_2.png)
 
 
 ## Issues
