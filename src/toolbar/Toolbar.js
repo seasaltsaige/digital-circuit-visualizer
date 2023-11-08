@@ -247,13 +247,13 @@ class Toolbar {
 
       } else if (this.selectedTool === "connect") {
 
-        const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_({ x: pin.location.x + 13 + 10, y: pin.location.y }, clickPosition, 5));
-        const out_pins = lScreen.out_pins.filter(pin => this._withinCircle_({ x: pin.location.x - 13 - 10, y: pin.location.y }, clickPosition, 5));
+        const in_pins = lScreen.in_pins.filter(pin => this._withinCircle_({ x: pin.location.x + 13 + 10, y: pin.location.y }, clickPosition, lScreen.r));
+        const out_pins = lScreen.out_pins.filter(pin => this._withinCircle_({ x: pin.location.x - 13 - 10, y: pin.location.y }, clickPosition, lScreen.r));
 
         const logic_pins = [];
         lScreen.logic_gates.forEach((lg) => {
-          logic_pins.push(...lg.inputs.filter(v => this._withinCircle_(v.location, clickPosition, 5)));
-          logic_pins.push(...lg.outputs.filter(v => this._withinCircle_(v.location, clickPosition, 5)));
+          logic_pins.push(...lg.inputs.filter(v => this._withinCircle_(v.location, clickPosition, lScreen.r)));
+          logic_pins.push(...lg.outputs.filter(v => this._withinCircle_(v.location, clickPosition, lScreen.r)));
         });
 
 
